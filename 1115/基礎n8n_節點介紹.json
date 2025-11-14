@@ -1,0 +1,880 @@
+{
+  "name": "基礎n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 寶傑帶你飛, n8n 小白必懂\n### 國貿系 助理教授 陳俊智 出品",
+        "height": 80,
+        "width": 1104,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "6c290e34-b9ac-42d9-bea9-b302f3ef35ac",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 流程邏輯\n觸發->左到右 上到下,資料如流水, 一次過一關",
+        "height": 208,
+        "width": 1120,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "99664527-c56b-41cb-8a2b-f93fead38403",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -192,
+        32
+      ],
+      "id": "774e435c-6aa6-4b71-8464-510d4593c746",
+      "name": "時間到就啟動"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        16,
+        32
+      ],
+      "id": "fad11a22-d1c7-4113-80d1-48e66f7ee9be",
+      "name": "執行第一個動作"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        240,
+        32
+      ],
+      "id": "80226a95-20a3-4a42-b87f-46e0f607263d",
+      "name": "執行第二個動作"
+    },
+    {
+      "parameters": {
+        "content": "## 常用觸發\n",
+        "height": 208,
+        "width": 1600,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        176
+      ],
+      "typeVersion": 1,
+      "id": "d210175d-f5cf-4afa-ac1e-7c1475d8adae",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        256
+      ],
+      "id": "22d5b44c-6427-4ba1-9759-faedc73d73c1",
+      "name": "時間到就啟動1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        160,
+        256
+      ],
+      "id": "911894f1-0080-4a0f-b735-e8a76d9e2584",
+      "name": "按下後驅動"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        432,
+        256
+      ],
+      "id": "906cf7a2-71b5-4d03-8ec3-5f07cda20dd8",
+      "name": "表單觸發",
+      "webhookId": "d14901e5-5d1f-4bb5-a810-33f8b9da31eb"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        720,
+        256
+      ],
+      "id": "fb9b6b15-a158-47f9-ad2f-5b196362ebbf",
+      "name": "對話觸發",
+      "webhookId": "89ece7aa-5728-4185-992e-ae47a4c00342"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1008,
+        256
+      ],
+      "id": "794fc3ab-14a4-4876-bf52-40cd7a810cd2",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "content": "## 資料處理節點",
+        "height": 336,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "1d9208be-1a8c-40e2-b7bd-1ba9454b8110",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        496
+      ],
+      "id": "ec0cc62c-1b30-40cf-9d0b-9ea5975d4acb",
+      "name": "修改資料的值"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        48,
+        496
+      ],
+      "id": "2df49f03-3d48-484d-b9e9-e543295ffa8f",
+      "name": "將資料分開"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -160,
+        656
+      ],
+      "id": "72526eed-7165-45fa-a314-4b42971efe1e",
+      "name": "匯集多個資料"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        48,
+        656
+      ],
+      "id": "02be0b32-d1dd-4ce8-bdb5-a030a3c6635a",
+      "name": "資料合併"
+    },
+    {
+      "parameters": {
+        "content": "## 資料處理節點",
+        "height": 336,
+        "width": 1104
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "4a531ddd-4c57-4d2f-99ba-262f06696199",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        496
+      ],
+      "id": "11a22ecb-6089-4dc2-86c6-dc5bd89ff295",
+      "name": "程式"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        496
+      ],
+      "id": "e0e5fc64-b73b-4a53-9a78-5e58331dfbfb",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "90606e97-2a73-4774-835b-86b5b3c16cd3"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        336,
+        656
+      ],
+      "id": "c7d3aeb9-e3d5-424b-bc5d-012c67f038b4",
+      "name": "Switch 判斷資料"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cecf09c7-9cda-48c6-b252-d5db81fcd32c",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        656
+      ],
+      "id": "15b0e5c2-22b1-4828-b227-011a6fee6d89",
+      "name": "If判斷式"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        896,
+        496
+      ],
+      "id": "4274ad33-73c2-41e2-abd8-da202e97b63c",
+      "name": "表格n8n內建"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        656
+      ],
+      "id": "aa64b675-92e3-4aee-a0d2-6e621d7d9c48",
+      "name": "Wait",
+      "webhookId": "d4044b93-234b-48a6-8e9b-64152f200842"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1152,
+        656
+      ],
+      "id": "e33e7a77-4fcf-4f64-8d03-45a1db9c0494",
+      "name": "Loop 迴圈"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "無特殊功能",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        496
+      ],
+      "id": "ad5b3954-57ab-4f95-ab82-80aefbb6aa9a"
+    },
+    {
+      "parameters": {
+        "content": "## 自動化工作流",
+        "height": 256,
+        "width": 1600,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        864
+      ],
+      "typeVersion": 1,
+      "id": "234e51d5-d6f9-438c-b439-f41d81203f51",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        944
+      ],
+      "id": "df4c626b-8903-41d1-910d-1bc621a26eac",
+      "name": "收到客戶的委託單"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3889f97d-747b-4665-920b-ecd0234304b2",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        944
+      ],
+      "id": "acb4f6dc-2b95-4eb7-82bd-2ee1c2597f9e",
+      "name": "預算超過5000美金"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        832
+      ],
+      "id": "4e05f060-4219-4b95-88c0-40f9c25b6cab",
+      "name": "財神爺來了",
+      "webhookId": "9075c89c-91da-4426-aef4-8eff72d1a499",
+      "credentials": {
+        "telegramApi": {
+          "id": "VoN9Qg4kLRxxkCas",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        1024
+      ],
+      "id": "16b5fe9d-502b-4890-b793-654e4a547a76",
+      "name": "感謝函",
+      "webhookId": "171917b2-12da-462d-82f9-6cab53d33630",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "o8Z4hkWUrLMQPzOT",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        1024
+      ],
+      "id": "2066a659-ffe2-4e5d-9f49-f20fda2f1d63",
+      "name": "委婉地感謝"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        480,
+        32
+      ],
+      "id": "0894a556-f298-4b53-a741-3a134a8d738e",
+      "name": "執行第三個動作"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "分包給ＡＩ",
+      "typeVersion": 1,
+      "position": [
+        320,
+        1024
+      ],
+      "id": "e9e28e79-f072-43a1-9fa2-a3c215518744"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        192,
+        1488
+      ],
+      "id": "63261ece-890f-4b0d-b0f2-f57c368ea270",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        1264
+      ],
+      "id": "c93bc320-4b15-4a94-a1bb-6eeb4363ed6f",
+      "name": "Sentiment Analysis"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        1264
+      ],
+      "id": "37522efd-ace9-4438-8bcb-59d2b8cd3e87",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        848,
+        1264
+      ],
+      "id": "2c82cb8e-d0f8-4b2b-b56c-b30db61360ea",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        848,
+        1424
+      ],
+      "id": "66e4dccf-aca4-4086-9841-521128a7f0a1",
+      "name": "Message a model1"
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1216,
+        1424
+      ],
+      "id": "52f536c2-617b-4c70-86c7-b6bcae33da78",
+      "name": "Message a model2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        1264
+      ],
+      "id": "a724a4c4-b091-4399-8c68-235cd79625fc",
+      "name": "Message a model3"
+    },
+    {
+      "parameters": {
+        "content": "## AI工具\n",
+        "height": 400,
+        "width": 1600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        1216
+      ],
+      "typeVersion": 1,
+      "id": "45753311-9421-48e9-9161-f18b9020b167",
+      "name": "Sticky Note6"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "時間到就啟動": {
+      "main": [
+        [
+          {
+            "node": "執行第一個動作",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "執行第一個動作": {
+      "main": [
+        [
+          {
+            "node": "執行第二個動作",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "執行第二個動作": {
+      "main": [
+        [
+          {
+            "node": "執行第三個動作",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "修改資料的值": {
+      "main": [
+        []
+      ]
+    },
+    "將資料分開": {
+      "main": [
+        []
+      ]
+    },
+    "匯集多個資料": {
+      "main": [
+        [
+          {
+            "node": "資料合併",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "時間到就啟動1": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "If判斷式": {
+      "main": [
+        []
+      ]
+    },
+    "表格n8n內建": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        []
+      ]
+    },
+    "Loop 迴圈": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "無特殊功能": {
+      "main": [
+        []
+      ]
+    },
+    "收到客戶的委託單": {
+      "main": [
+        [
+          {
+            "node": "預算超過5000美金",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "預算超過5000美金": {
+      "main": [
+        [
+          {
+            "node": "財神爺來了",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "分包給ＡＩ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "委婉地感謝": {
+      "main": [
+        [
+          {
+            "node": "感謝函",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "分包給ＡＩ": {
+      "main": [
+        [
+          {
+            "node": "委婉地感謝",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "感謝函": {
+      "main": [
+        []
+      ]
+    },
+    "Sentiment Analysis": {
+      "main": [
+        []
+      ]
+    },
+    "Message a model": {
+      "main": [
+        []
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        []
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "19808c38-a778-4d2d-999b-caa803f12d64",
+  "meta": {
+    "instanceId": "a51bd188aa10025f8b4f8b60fd29b53879528fa7cce0b569b9cc2640cf6d5c9d"
+  },
+  "id": "wJRGStk0NQE5iR4I",
+  "tags": []
+}

@@ -1,0 +1,343 @@
+{
+  "name": "telegram 圖片OCR",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -544,
+        -128
+      ],
+      "id": "c183da3c-eb07-4934-8515-c14a834bcef8",
+      "name": "Telegram Trigger",
+      "webhookId": "3a3749b1-11ef-40b2-81b9-c3b5651e22f0",
+      "credentials": {
+        "telegramApi": {
+          "id": "yln6UmaISwtxrwAF",
+          "name": "1107_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "f919c1fa-2129-40e4-a628-4adceb48c4e0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a91dffdd-14a7-4048-9f2b-225c3c9e280a",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -368,
+        -128
+      ],
+      "id": "0124c1ee-64d5-4f88-aee7-3a2b46ea4e98",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Perform OCR on the attached image.\nExtract all text and format it into clean Markdown, preserving the original structure (like line breaks and paragraphs).\nYour response should contain ONLY the extracted and formatted text, with no introductory phrases or comments.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -144
+      ],
+      "id": "60335851-4d01-4a07-95a7-9ec7ed134e45",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        -144
+      ],
+      "id": "ae3726d6-2472-4a29-a199-7536f7a9a48e",
+      "name": "Send a text message",
+      "webhookId": "81aa973b-033b-41ff-86d1-33bc4758dcef",
+      "credentials": {
+        "telegramApi": {
+          "id": "yln6UmaISwtxrwAF",
+          "name": "1107_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=你是一個天氣助理。你的工作是獲取天氣資料，使其易于閱讀，然後發送它。\n\n**你的具體工作流程：**\n1.  **獲取 (GET)：** 使用 `openweathermap` 工具來獲取使用者指定地點的天氣。\n2.  **格式化 (FORMAT)：** 將收到的 JSON 資料，格式化為一條簡單、易讀的**繁體中文**訊息。\n3.  **發送 (SEND)：** 使用 `telegram` 工具來發送這條格式化後的訊息。\n\n**訊息格式範例（必須使用繁體中文）：**\n\"[城市名稱]天氣：[天氣狀況]，溫度 [目前溫度]°C (體感 [體感溫度]°C)，濕度 [濕度]%。\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        112
+      ],
+      "id": "6de738d2-04bc-402d-a62b-8614203d4cbd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('City', ``, 'string') }}",
+        "language": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Language', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        176,
+        304
+      ],
+      "id": "287992aa-8cee-422f-8c8f-112c45bd50a0",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "PXAJNn4NezCcjDts",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        320
+      ],
+      "id": "188da901-1eeb-4533-8b91-2c287a21c7e1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        320
+      ],
+      "id": "a061f2e2-4fdc-4947-a72d-263be2c63063",
+      "name": "Send a text message in Telegram",
+      "webhookId": "44d0b6ce-237e-43f0-952d-4a8d8c401e31",
+      "credentials": {
+        "telegramApi": {
+          "id": "yln6UmaISwtxrwAF",
+          "name": "1107_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        112
+      ],
+      "id": "a194a2c8-ea91-4175-a041-0cad16f63cbc",
+      "name": "Send a text message1",
+      "webhookId": "fc7020d3-551c-4f7c-860a-faefe50230d8",
+      "credentials": {
+        "telegramApi": {
+          "id": "yln6UmaISwtxrwAF",
+          "name": "1107_bot"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message in Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "68d934f7-11b0-4397-b988-39523dd2cc09",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a51bd188aa10025f8b4f8b60fd29b53879528fa7cce0b569b9cc2640cf6d5c9d"
+  },
+  "id": "aD2IvEKabkaEfUxX",
+  "tags": []
+}

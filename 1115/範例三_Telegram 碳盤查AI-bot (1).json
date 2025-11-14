@@ -1,0 +1,468 @@
+{
+  "name": "範例三＿Telegram 碳盤查AI-bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "id": "7b041325-ef2c-491b-9689-9ea8717e7a59",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -896,
+        720
+      ],
+      "webhookId": "51942fbb-ca0e-4ec4-9423-5fcc7d3c4281",
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "VoN9Qg4kLRxxkCas",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Chatbot mode by default\n### (when no command is provided)",
+        "height": 233,
+        "width": 330.5019024637719
+      },
+      "id": "f205988e-06b8-4333-a6a7-8c94c2dc4274",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        800
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Create an image\n### /image + request",
+        "height": 233.8785714285713,
+        "width": 329.7428571428562
+      },
+      "id": "4cd994de-e198-4af0-9aaf-701719996d6a",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        496
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "id": "22b37b2f-bcd3-4321-967f-9bf7c2e0121b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "3fe3a96d-6ee9-4f12-a32c-f5f5b729e257",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1fe2a00-ddb9-4f08-8a10-b9680bf3abba",
+      "name": "Switch ( image or not )",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -672,
+        720
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Perform OCR on the attached image.\nExtract all text and format it into clean Markdown, preserving the original structure (like line breaks and paragraphs).\nYour response should contain ONLY the extracted and formatted text, with no introductory phrases or comments.",
+        "inputType": "binary",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        576
+      ],
+      "id": "2e3b6a10-5ceb-430a-a1ba-4ed45eb83c6e",
+      "name": "Analyze an image1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=報告老闆碳盤查資料已經填入sheet",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "bf7adddc-e76b-49ab-a2e9-420e802b50bc",
+      "name": "Text reply",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        416,
+        752
+      ],
+      "typeVersion": 1,
+      "webhookId": "d4a7f49e-c04c-4820-848d-3e2345139ddb",
+      "credentials": {
+        "telegramApi": {
+          "id": "VoN9Qg4kLRxxkCas",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 工作流程解釋\n\n這個自動化流程由多個節點（nodes）串連而成，以下是每個步驟的詳細說明：\n\n#### 1. `Telegram Trigger` (Telegram 觸發器)\n* **功能**：這是整個流程的起點。它會監聽指定的 Telegram 機器人，一旦收到任何訊息，流程就會被觸發。\n* **設定**：它被設定為會自動下載收到的圖片檔案。\n\n#### 2. `Switch ( image or not )` (Switch 判斷節點)\n* **功能**：用來判斷收到的訊息是圖片還是文字。\n* **流程**：如果訊息中包含圖片 (`message.photo`)，流程會走向「圖片分析」的路徑；如果是文字或其他類型，則不會繼續。\n\n#### 3. `Analyze an image1` (Google Gemini 圖片分析)\n* **功能**：這是第一個 AI 處理步驟，使用 Google 的 `gemini-2.5-flash` 模型來執行光學字元辨識 (OCR)。\n* **指令 (Prompt)**：它被要求「對附加的圖片執行 OCR，提取所有文字並格式化為 Markdown，只回傳提取的文字，不要有任何介紹性詞語」。\n* **輸出**：圖片中的所有文字會被轉換成純文字格式，並傳遞給下一個節點。\n\n#### 4. `Message a model1` (Google Gemini 資料提取)\n* **功能**：這是第二次使用 AI。它接收上一步 OCR 辨識出來的文字，並從中提取結構化資料。\n* **指令 (Prompt)**：這個指令非常明確，它要求 `gemini-2.5-flash` 模型從文字中尋找關於「冷媒」的資訊（例如：冷媒量、冷媒種類、填充量），並提取出化學代號（如 R-410A）和重量（如 660g）。\n* **輸出**：最關鍵的是，它被要求以 JSON 格式回傳結果，例如：`{\"冷媒型號\": \"R-410A\", \"填充重量(g)\": \"660\"}`。\n\n#### 5. `Code in JavaScript1` (程式碼節點)\n* **功能**：執行一小段 JavaScript 程式碼，用來解析上一個 AI 節點輸出的 JSON 字串。\n* **目的**：將 JSON 字串轉換為 n8n 中更容易使用的獨立變數 (`冷媒型號` 和 `填充重量_g`)，方便後續節點直接取用。\n\n#### 6. `Append row in sheet` (Google Sheets 寫入資料)\n* **功能**：將處理好的資料寫入 Google Sheets。\n* **設定**：它會連線到一個名為「XX公司碳盤查」的 Google 試算表，並在指定的工作表 (`Sheet1`) 中新增一列。\n* **資料對應**：它會將前面提取出的「冷媒型號」填入對應的欄位，「填充重量_g」也一樣，完成資料的儲存。\n\n#### 7. `Text reply` (Telegram 回覆訊息)\n* **功能**：在所有步驟成功完成後，向使用者發送一則確認訊息。\n* **內容**：它會傳送「報告老闆碳盤查資料已經填入sheet」到一開始傳送圖片的那個 Telegram 聊天室，告知使用者任務已完成。",
+        "height": 882,
+        "width": 771
+      },
+      "id": "31115433-4cbf-45f8-93ea-88f5f18fde86",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1712,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# 辨識圖片",
+        "height": 720,
+        "width": 484,
+        "color": 4
+      },
+      "id": "f54058d2-588e-469c-a29d-0a76f2c9a880",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Bs0AVqSeEfjxDeopqww3OtBiBXTZOq8yX2oJJzXrydQ",
+          "mode": "list",
+          "cachedResultName": "XX公司碳盤查",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Bs0AVqSeEfjxDeopqww3OtBiBXTZOq8yX2oJJzXrydQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Bs0AVqSeEfjxDeopqww3OtBiBXTZOq8yX2oJJzXrydQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "冷媒型號": "={{ $json['冷媒型號'] }}",
+            "填充量": "={{ $json['填充重量_g'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "冷媒型號",
+              "displayName": "冷媒型號",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "填充量",
+              "displayName": "填充量",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        752
+      ],
+      "id": "80d85f0b-1c56-4ec4-8d85-a64f7e8ee46d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GdYcUyn9Tby4pSUW",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the input JSON string from the previous node.\nconst jsonString = $input.first().json.content.parts[0].text;\n\n// 2. Parse the JSON string into a JavaScript object.\nconst data = JSON.parse(jsonString);\n\n// 3. Directly access the values using their keys.\nconst refrigerantModel = data[\"冷媒型號\"];\nconst fillWeight = data[\"填充重量(g)\"];\n\n// 4. Return the new variables.\nreturn {\n  \"冷媒型號\": refrigerantModel,\n  \"填充重量_g\": fillWeight\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        752
+      ],
+      "id": "ee8a80f6-b9b3-4522-9ff4-197c6738f174",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=這裡有一段產品規格文字：\n\"\"\"\n{{ $json.content.parts[0].text }}\n\"\"\"\n找到後，請**只回傳**該項目的完整內容，不要有任何其他文字。\n\n例如：\n冷媒量: (R-410A) 660g\n\n這個項目可能被標記為「冷媒量」、「冷媒種類」、「填充量」或類似的名詞。\n我需要的是它對應的數值，這個數值通常會包含一個化學代號（例如 R-410A, R-32）和一個重量（例如 660g, 1.2kg）。\n\n請幫我提取這段完整的資訊。\n\n輸出格式：\n{\n  \"冷媒型號\": \"R-410A\",\n  \"填充重量(g)\": \"660\"\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        896
+      ],
+      "id": "d310962e-910b-4378-b089-a01e4b871f4c",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 冷氣銘牌\n## https://www.mobile01.com/topicdetail.php?f=168&t=719883\n## https://safety.bsmi.gov.tw/wSite/ct?xItem=59946&ctNode=4735&mp=94",
+        "height": 176,
+        "width": 768,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1712,
+        1296
+      ],
+      "typeVersion": 1,
+      "id": "63fa19e6-8c3a-4a1a-8f4d-318f3c066c3f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# 拍照",
+        "height": 288,
+        "width": 452,
+        "color": 7
+      },
+      "id": "d3322227-29f1-465c-b572-964ef8d43c11",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -928,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# 處理資料 寫入google sheet 傳訊息告知寫入",
+        "height": 288,
+        "width": 740,
+        "color": 7
+      },
+      "id": "abdd614d-16a8-47f8-92f1-d5480276e870",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## http://blog.3dgowl.com/telegram-telegram%E4%BA%94-%E5%8F%96%E5%BE%97-chat-id/",
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        48,
+        960
+      ],
+      "typeVersion": 1,
+      "id": "7089275d-5f54-449d-8f27-0dfe40ed100d",
+      "name": "Sticky Note7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch ( image or not )",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch ( image or not )": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Analyze an image1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1b5e9dc2-7f0e-4657-946b-74725d56ba6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a51bd188aa10025f8b4f8b60fd29b53879528fa7cce0b569b9cc2640cf6d5c9d"
+  },
+  "id": "uMwhwWStLskR8z3D",
+  "tags": []
+}

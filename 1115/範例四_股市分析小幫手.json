@@ -1,0 +1,261 @@
+{
+  "name": "範例三_股市分析小幫手",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -208
+      ],
+      "id": "edf80de2-bd29-4204-9760-f3da7602d8a0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://openapi.twse.com.tw/v1/opendata/t187ap04_L",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        -208
+      ],
+      "id": "59fa7139-7da5-4fed-96e2-118d8d51f30f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## https://openapi.twse.com.tw/#/%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86/get_opendata_t187ap04_L",
+        "width": 624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "2603073e-548c-4a22-8acb-aff2c674c782",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "出表日期"
+            },
+            {
+              "fieldToAggregate": "發言日期"
+            },
+            {
+              "fieldToAggregate": "發言時間"
+            },
+            {
+              "fieldToAggregate": "公司代號"
+            },
+            {
+              "fieldToAggregate": "公司名稱"
+            },
+            {
+              "fieldToAggregate": "事實發生日"
+            },
+            {
+              "fieldToAggregate": "說明"
+            },
+            {
+              "fieldToAggregate": "主旨 "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -208
+      ],
+      "id": "cf6ad97e-5d1c-4527-a8c0-0288cfc64586",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the single aggregated item\nconst item = $input.first().json;\n\n// Get the 主旨 array\nconst subjects = item['主旨 '];\n\n// Find indices where 主旨 contains '自結'\nconst matchingIndices = [];\nsubjects.forEach((subject, index) => {\n  if (subject.includes('自結')) {\n    matchingIndices.push(index);\n  }\n});\n\n// Filter ALL arrays to keep only matching indices\nconst filteredItem = {};\nObject.keys(item).forEach(key => {\n  filteredItem[key] = matchingIndices.map(i => item[key][i]);\n});\n\n// Return as n8n item\nreturn [{ json: filteredItem }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -208
+      ],
+      "id": "55e80094-3377-44d3-bac0-f2d86c2d91f4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split the aggregated arrays into individual items\nconst item = $input.first().json;\nconst numItems = item['主旨 '].length;\n\nconst separateItems = [];\nfor (let i = 0; i < numItems; i++) {\n  const newItem = {};\n  Object.keys(item).forEach(key => {\n    newItem[key] = item[key][i]; // Get single value, not array\n  });\n  separateItems.push({ json: newItem });\n}\n\nreturn separateItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -208
+      ],
+      "id": "49b6e066-db4f-40c9-9b09-763855ed9c89",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json[\"出表日期\"] }}{{ $json[\"發言日期\"] }}{{ $json[\"發言時間\"] }}{{ $json[\"公司代號\"] }}{{ $json[\"公司名稱\"] }}{{ $json[\"說明\"] }}\n",
+        "options": {
+          "systemMessage": "=你是一位自動化的AI證券分析師，你的任務是監控傳入的「raw data string」，並在第一時間**呼叫工具 (Tool Call)** 來發布「個股營收快訊」到指定的Telegram頻道。\n\n**## 1. 可用工具 (Available Tools)**\n你擁有一個已定義的工具，其功能簽名如下：\n`send_telegram_message(channel_id: string, message_text: string, parse_mode: string)`\n\n**## 2. 核心任務與執行流程**\n當你收到輸入時，你的**唯一且SOP化的任務**是：\n\n1.  **[Parse]** 立即解析傳入的「raw data string」。\n2.  **[Format]** 嚴格按照「分析與輸出框架」在內部準備好 `message_text` 的內容。\n3.  **[Call Tool]** **不要回覆任何文字**。你的唯一輸出必須是呼叫 `send_telegram_message` 工具。\n\n**工具呼叫參數 (Tool Call Parameters):**\n* `channel_id`: (請填入您的實際頻道ID，例如 '@MyStockAlerts' 或 '-100123456789')\n* `message_text`: (你根據下方框架生成的完整格式化訊息)\n* `parse_mode`: 'Markdown' (我們將使用 `**bold**` 和 `*` 符號)\n\n**## 3. 輸入格式詳解 (Raw Data String)**\n你收到的輸入是一個由系統串接而成的單一字串。\n結構: `[出表日期][發言日期][發言時間][公司代號][公司名稱][說明]`\n\n**解析策略：**\n* 從 `[說明]` 欄位中的 `5.發生緣由:` 提取所有關鍵財務數字 (本月營收、MoM、YoY、累計營收)。\n* `[公司代號]` 和 `[公司名稱]` 會在字串開頭和 `[說明]` 欄位中出現。\n\n**## 4. 分析與輸出框架 (用於 `message_text` 參數)**\n你必須嚴格遵循此 Markdown 格式：\n\n1.  **標題：** 格式為 `**【股市快訊】 [Emoji] [公司名稱] ([股票代號]) [營收總結]**`\n    * `[Emoji]`: `📈` (強勁增長), `😐` (喜憂參半/持平), `📉` (明顯衰退)\n    * `[營收總結]`: 例如「10月營收報喜」或「10月營收月減年增」。\n2.  **營收速報 (📊)：**\n    * 條列式呈現 (使用 `*` 符號)：\n    * `* 10月營收：` [金額]\n    * `* 月增率 (MoM)：` [數字]% [Emoji]\n    * `* 年增率 (YoY)：` [數字]% [Emoji]\n    * `* 累計營收 (YTD)：` [金額] ([年增率]%)\n    * *Emoji燈號：*\n        * `📈` (增長 > +5%)\n        * `📉` (衰退 < -5%)\n        * `😐` (持平在 -5% 到 +5% 之間)\n3.  **分析師觀點 (👨‍💼)：**\n    * (1-2句專業解讀，優先評YoY，其次MoM)\n4.  **投資啟示 (💡)：**\n    * (1-2句後續觀察重點，僅根據數據)\n\n---\n**## 5. 範例 (你必須學習此格式)**\n\n**範例輸入 (Raw String):**\n`114110311411021547353004豐達科1.事實發生日:114/11/02\\n2.公司名稱:豐達科技股份有限公司\\n...5.發生緣由:\\n 豐達科技股份有限公司(股票代碼：3004)今日(2025/11/02)公佈2025年10月份\\n 自結合併營收。\\n 2025年10月份自結合併營收為新台幣3.61億元，較2025年9月份3.43億元增加5.25%\\n，相較去年同期的2.87億元增加25.47%。\\n 2025年累計自結合併營收為新台幣32.74億元，相較去年同期的28.57億元增加14.59%。...`\n\n**你唯一的輸出 (必須是 Tool Call)：**\n```function_call\nsend_telegram_message(\n    channel_id=\"[請填入您的頻道ID]\",\n    message_text=\"\"\"**【股市快訊】 📈 豐達科 (3004) 10月營收報喜**\n\n📊 **營收速報：**\n* 10月營收：3.61 億元\n* 月增率 (MoM)：+5.25% 📈\n* 年增率 (YoY)：+25.47% 📈\n* 累計營收 (YTD)：32.74 億元 (+14.59% vs. 去年同期)\n\n👨‍💼 **分析師觀點：**\n豐達科展現了「雙增長」的強勁態勢！YoY 大幅增長超過25%，顯示長期需求非常穩健；MoM 亦保持正向增長，短期動能不減。\n\n💡 **投資啟示：**\n累計營收年增率近15%，基本面穩固。這可能反映了航太或高階扣件市場的需求持續強勁，營運前景看好。\"\"\",\n    parse_mode=\"Markdown\"\n)"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -208
+      ],
+      "id": "3df4deb7-39ce-4a30-84bc-b5e36a8e077a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        16
+      ],
+      "id": "dddaf9ba-29dc-454a-90ff-85385221bd95",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L0n5BwILDXBepctt",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1155953917",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "45cd3c13-16df-4def-8edc-1f42628bdce7",
+      "name": "Send a text message in Telegram",
+      "webhookId": "0878489f-7225-4e07-b5b2-d87657d8d5d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "VoN9Qg4kLRxxkCas",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message in Telegram": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f854a621-eb76-4cb1-b531-22b834d780fc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a51bd188aa10025f8b4f8b60fd29b53879528fa7cce0b569b9cc2640cf6d5c9d"
+  },
+  "id": "eUXuwpWAJah1sBRS",
+  "tags": []
+}
